@@ -2,11 +2,10 @@ from pieces import Pieces
 import numpy as np
 
 
-## going to write it for whites first!!
-## everythigng
 class Pawn(Pieces):
     def __init__(self, colour, start_pos, current_pos, is_alive=True):
         super().__init__(colour, start_pos, current_pos, is_alive)
+        self.name = 'pawn'
 
     ## This determines whether the move is a take move for a pawn
     def is_take_move(self, new_pos):
@@ -44,8 +43,8 @@ class Pawn(Pieces):
 
     '''
     Just trying to get an idea of how 'board' will be structured.
-    Think the best idea would for it to be an 8x8 matrix.
-    Each position will contain the piece or None.
+    Think the best idea would be an 8x8 numpy matrix.
+    Each position will contain the a piece object or None.
     '''
 
     def move(self, new_pos, board):
