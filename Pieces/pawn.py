@@ -95,4 +95,3 @@ class Pawn(Pieces):
                 self.current_pos == new_pos
         else:
             print("This is an invalid move. Please try again.")
-
