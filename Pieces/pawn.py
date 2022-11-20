@@ -50,8 +50,8 @@ class Pawn(Pieces):
     def move(self, new_pos, board):
 
         if Pawn.is_reg_move(new_pos) == True:
-            # if position is not empty give a invalid message
-            if board[new_pos[0]][new_pos[1]].colour != None:
+            # if position is not empty give an invalid message
+            if board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
                 #sets previous position to None
@@ -60,7 +60,7 @@ class Pawn(Pieces):
                 self.current_pos == new_pos
         elif Pawn.is_take_move(new_pos) == True:
             # if position is empty either we cant move or it is an en passant
-            if board[new_pos[0]][new_pos[1]].colour == None:
+            if board[new_pos[0]][new_pos[1]] == None:
                 ## en passant condition
                 pass
             # if our piece is in new_pos then this is an invalid move
@@ -85,7 +85,7 @@ class Pawn(Pieces):
                     print("This is an invalid move")
                     break
             '''
-            if board[new_pos[0]][new_pos[1]].colour != None:
+            if board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
                 #sets previous position to None
