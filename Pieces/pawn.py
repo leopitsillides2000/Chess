@@ -6,6 +6,8 @@ class Pawn(Pieces):
     def __init__(self, colour, start_pos, current_pos, is_alive=True):
         super().__init__(colour, start_pos, current_pos, is_alive)
         self.name = 'pawn'
+        #This puts the piece into its start position on the board
+        Pieces.board[start_pos[0]][start_pos[1]] = self
 
     ## This determines whether the move is a take move for a pawn
     def is_take_move(self, new_pos):
