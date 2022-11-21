@@ -54,12 +54,7 @@ class Pawn(Pieces):
             if board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
-                #sets previous position to None
-                board[self.current_pos[0]][self.current_pos[1]] == None
-                #changes current position
-                self.current_pos == new_pos
-                #adds piece to new position
-                board[new_pos[0]][new_pos[1]] == self
+                self.apply_move(new_pos, board)
         elif Pawn.is_take_move(new_pos) == True:
             # if position is empty either we cant move or it is an en passant
             if board[new_pos[0]][new_pos[1]] == None:
@@ -69,14 +64,7 @@ class Pawn(Pieces):
             elif board[new_pos[0]][new_pos[1]].colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
             else:
-                #sets previous position to None
-                board[self.current_pos[0]][self.current_pos[1]] == None
-                #sets oppositions piece to dead
-                board[new_pos[0]][new_pos[1]].is_alive == False
-                #changes current position
-                self.current_pos == new_pos
-                #adds piece to new position
-                board[new_pos[0]][new_pos[1]] == self
+                self.apply_take(new_pos, board)
         elif Pawn.is_start_move(new_pos) == True:
             #simple_check_pos checks if a piece exists between current_pos and new_pos
             if Pieces.simple_check_pos(new_pos, board) == False:
@@ -85,11 +73,6 @@ class Pawn(Pieces):
             elif board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
-                #sets previous position to None
-                board[self.current_pos[0]][self.current_pos[1]] == None
-                #changes current position
-                self.current_pos == new_pos
-                #adds piece to new position
-                board[new_pos[0]][new_pos[1]] == self
+                self.apply_move(new_pos, board)
         else:
             print("This is an invalid move. Please try again.")
