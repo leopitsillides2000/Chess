@@ -33,14 +33,6 @@ class Pawn(Pieces):
     def is_en_passant():
         pass
 
-    ## Dont know if this is neccessary, will see after next method is written
-    def is_valid_move(self, new_pos):
-        if (Pawn.is_take_move(new_pos), Pawn.is_reg_move(new_pos), Pawn.is_start_move(new_pos)) == (False, False, False):
-            return False
-        else:
-            return True
-
-
     '''
     Just trying to get an idea of how 'board' will be structured.
     Think the best idea would be an 8x8 numpy matrix.
