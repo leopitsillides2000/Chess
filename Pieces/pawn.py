@@ -11,21 +11,18 @@ class Pawn(Pieces):
 
     ## This determines whether the move is a take move for a pawn
     def is_take_move(self, new_pos):
-        if new_pos == self.current_pos + np.array([1,1]) or new_pos == self.current_pos + np.array([1,-1]):
+        if np.array_equal(new_pos, self.current_pos + np.array([1,1])) == True or np.array_equal(new_pos, self.current_pos + np.array([1,-1])) == True:
             return True
         else:
             return False
 
     ## This determines whether the move is just a step forward for the pawn
     def is_reg_move(self, new_pos):
-        if new_pos == self.current_pos + np.array([1,0]):
-            return True
-        else:
-            return False
+        return np.array_equal(new_pos, self.current_pos + np.array([1,0]))
 
     ## This determines whether the move is a two step from the start position
     def is_start_move(self, new_pos):
-        if new_pos == self.current_pos + np.array([2,0]) and self.start_pos == self.current_pos:
+        if np.array_equal(new_pos, self.current_pos + np.array([2,0])) == True and np.array_equal(self.start_pos, self.current_pos) == True:
             return True
         else:
             return False
@@ -42,7 +39,6 @@ class Pawn(Pieces):
         else:
             return True
 
-
     '''
     Just trying to get an idea of how 'board' will be structured.
     Think the best idea would be an 8x8 numpy matrix.
@@ -51,13 +47,15 @@ class Pawn(Pieces):
 
     def move(self, new_pos, board):
 
-        if Pawn.is_reg_move(new_pos) == True:
+        if self.is_reg_move(new_pos) == True:
             # if position is not empty give an invalid message
             if board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
                 self.apply_move(new_pos, board)
-        elif Pawn.is_take_move(new_pos) == True:
+                return
+        elif self.is_take_move(new_pos) == True:
+            
             # if position is empty either we cant move or it is an en passant
             if board[new_pos[0]][new_pos[1]] == None:
                 ## en passant condition
@@ -67,14 +65,26 @@ class Pawn(Pieces):
                 print("This is an invalid move. One of your pieces already exists in this position.")
             else:
                 self.apply_take(new_pos, board)
-        elif Pawn.is_start_move(new_pos) == True:
+                return
+        elif self.is_start_move(new_pos) == True:
             #simple_check_pos checks if a piece exists between current_pos and new_pos
-            if Pieces.simple_check_pos(new_pos, board) == False:
+            if self.simple_check_pos(new_pos, board) == False:
                 print("This is an invalid move. You cannot move over pieces.")
             #if a piece exists in new_pos this move is invalid
             elif board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
+                print(1)
                 self.apply_move(new_pos, board)
+                return
         else:
             print("This is an invalid move. Please try again.")
+
+##Tests
+pawn1 = Pawn('white', np.array([1,0]), np.array([1,0]))
+print(Pieces.board)
+pawn1.move(np.array([3,0]), Pieces.board)
+print(Pieces.board)
+
+#print(np.array_equal(np.array([2,0]),pawn1.current_pos + np.array([1,0])))
+#print(pawn1.is_reg_move(np.array([2,0])))
