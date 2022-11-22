@@ -1,7 +1,7 @@
 from pieces import Pieces
 import numpy as np
 
-
+## This is written for white pieces at the moment - specifically the is_.._move functions
 class Pawn(Pieces):
     def __init__(self, colour, start_pos, current_pos, is_alive=True):
         super().__init__(colour, start_pos, current_pos, is_alive)
@@ -11,19 +11,32 @@ class Pawn(Pieces):
 
     ## This determines whether the move is a take move for a pawn
     def is_take_move(self, new_pos):
-        if np.array_equal(new_pos, self.current_pos + np.array([1,1])) == True or np.array_equal(new_pos, self.current_pos + np.array([1,-1])) == True:
-            return True
+        if self.colour == 'black':
+            if np.array_equal(new_pos, self.current_pos + np.array([1,1])) == True or np.array_equal(new_pos, self.current_pos + np.array([1,-1])) == True:
+                return True
+            else:
+                return False
         else:
-            return False
+            if np.array_equal(new_pos, self.current_pos + np.array([-1,-1])) == True or np.array_equal(new_pos, self.current_pos + np.array([-1,1])) == True:
+                return True
+            else:
+                return False
+
 
     ## This determines whether the move is just a step forward for the pawn
     def is_reg_move(self, new_pos):
-        return np.array_equal(new_pos, self.current_pos + np.array([1,0]))
+        if self.colour == 'black':
+            return np.array_equal(new_pos, self.current_pos + np.array([1,0]))
+        else:
+            return np.array_equal(new_pos, self.current_pos + np.array([-1,0]))
 
     ## This determines whether the move is a two step from the start position
     def is_start_move(self, new_pos):
-        if np.array_equal(new_pos, self.current_pos + np.array([2,0])) == True and np.array_equal(self.start_pos, self.current_pos) == True:
-            return True
+        if np.array_equal(self.start_pos, self.current_pos) == True:
+            if self.colour == 'black':
+                return np.array_equal(new_pos, self.current_pos + np.array([2,0]))
+            else:
+                return np.array_equal(new_pos, self.current_pos + np.array([-2,0]))
         else:
             return False
 
@@ -31,13 +44,6 @@ class Pawn(Pieces):
     ## is essentially a 'take_move' with extra conditions so could be added later!
     def is_en_passant():
         pass
-
-    ## Dont know if this is neccessary, will see after next method is written
-    def is_valid_move(self, new_pos):
-        if (Pawn.is_take_move(new_pos), Pawn.is_reg_move(new_pos), Pawn.is_start_move(new_pos)) == (False, False, False):
-            return False
-        else:
-            return True
 
     '''
     Just trying to get an idea of how 'board' will be structured.
@@ -81,10 +87,29 @@ class Pawn(Pieces):
             print("This is an invalid move. Please try again.")
 
 ##Tests
-pawn1 = Pawn('white', np.array([1,0]), np.array([1,0]))
-print(Pieces.board)
-pawn1.move(np.array([3,0]), Pieces.board)
-print(Pieces.board)
 
-#print(np.array_equal(np.array([2,0]),pawn1.current_pos + np.array([1,0])))
-#print(pawn1.is_reg_move(np.array([2,0])))
+#regular move forward
+def test1():
+    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
+    print(Pieces.board)
+    pawn_black.move(np.array([2,0]), Pieces.board)
+    print(Pieces.board)
+
+#double start move
+def test2():
+    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
+    print(Pieces.board)
+    pawn_black.move(np.array([3,0]), Pieces.board)
+    print(Pieces.board)
+
+#take a piece
+def test3():
+    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
+    pawn_white = Pawn('white', np.array([2,1]), np.array([2,0]))
+    print(Pieces.board)
+    pawn_black.move(np.array([2,1]), Pieces.board)
+    print(Pieces.board)
+
+#test1()
+#test2()
+test3()
