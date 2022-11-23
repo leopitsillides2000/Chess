@@ -1,7 +1,6 @@
 from pieces import Pieces
 import numpy as np
 
-## This is written for white pieces at the moment - specifically the is_.._move functions
 class Pawn(Pieces):
     def __init__(self, colour, start_pos, current_pos, is_alive=True):
         super().__init__(colour, start_pos, current_pos, is_alive)
