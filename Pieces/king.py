@@ -19,15 +19,33 @@ class King(Pieces):
         else:
             return False
 
+    def is_castle(self, new_pos, board):
+        piece = board[new_pos[0]][new_pos[1]]
+        #if new_pos has rook
+        if piece != None and piece.name == 'rook':
+            #if rook is the same colour
+            if self.colour == piece.colour:
+                #if neither rook nor king have moved
+                ##Not sure how to take account of whether the king and rook have moved
+                pass
+            pass
+        return False
+        
     def move(self, new_pos, board):
+        new_space = board[new_pos[0]][new_pos[1]]
         if self.is_move(new_pos) == True:
-            if board[new_pos[0]][new_pos[1]] == None:
+            if new_space == None:
                 self.apply_move(new_pos, board)
-            elif board[new_pos[0]][new_pos[1]].colour == self.colour:
+            elif new_space.colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
             else:
                 self.apply_take(new_pos, board)
                 
+        elif self.is_castle(new_pos, board) == True:
+            if self.simple_check_pos(new_pos, board) == True:
+                new_space, board[self.current_pos[0]][self.current_pos[1]] = self, new_space
+            else:
+                print("This is an invalid castle. There are peices in the way.")
         else:
             print("This is an invalid move.")
 
