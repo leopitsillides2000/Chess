@@ -14,7 +14,7 @@ class Rook(Pieces):
             return True
         else:
             return False
-
+    '''
     def move(self, new_pos, board):
         #check if new_pos is a valid move
         if self.is_move(new_pos) == True:
@@ -33,3 +33,4 @@ class Rook(Pieces):
                 print("This is an invalid move. A piece is in the way.")
         else:
             print("This is an invalid move.")
+    '''

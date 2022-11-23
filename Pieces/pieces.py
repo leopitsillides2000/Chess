@@ -46,3 +46,37 @@ class Pieces:
         self.current_pos = new_pos
         #adds piece to new position
         board[new_pos[0]][new_pos[1]] = self
+
+    #is_move is a function input that is individual for each piece class
+    #hop is wether the piece can pass over other pieces
+    def move(self, new_pos, board, is_move, hop = False):
+        #check if new_pos is a valid move
+        if is_move(new_pos) == True:
+            #if the piece cant pass over other pieces then must use simple_check_pos method
+            if hop == False:
+                #check if any pieces exist between current_pos and new_pos
+                if self.simple_check_pos(new_pos, board) == True:
+                    # if nothing exists in new_pos then move there
+                    if board[new_pos[0]][new_pos[1]] == None:
+                        self.apply_move(new_pos, board)
+                    # if own colour exists in new_pos then invalid move
+                    elif board[new_pos[0]][new_pos[1]].colour == self.colour:
+                        print("This is an invalid move. One of your pieces already exists in this position.")
+                    # if opposite colour exists in new_pos then take piece
+                    else:
+                        self.apply_take(new_pos, board)
+                else:
+                    print("This is an invalid move. A piece is in the way.")
+            #if piece can pass over other pieces then dont have to apply simple_check_pos method
+            else:
+                # if nothing exists in new_pos then move there
+                if board[new_pos[0]][new_pos[1]] == None:
+                    self.apply_move(new_pos, board)
+                # if own colour exists in new_pos then invalid move
+                elif board[new_pos[0]][new_pos[1]].colour == self.colour:
+                    print("This is an invalid move. One of your pieces already exists in this position.")
+                # if opposite colour exists in new_pos then take piece
+                else:
+                    self.apply_take(new_pos, board)
+        else:
+            print("This is an invalid move.")
