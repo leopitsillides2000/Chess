@@ -14,7 +14,7 @@ class Knight(Pieces):
             return True
         else:
             return False
-    '''
+    
     def move(self, new_pos, board):
         #check if new_pos is a valid move
         if self.is_move(new_pos) == True:
@@ -29,4 +29,4 @@ class Knight(Pieces):
                 self.apply_take(new_pos, board)
         else:
             print("This is an invalid move.")
-    '''
+    

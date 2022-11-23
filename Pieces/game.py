@@ -44,8 +44,43 @@ class Game():
         king_b = King('black', np.array([0,4]))
         print(Pieces.board)
 
-    def run_game():
+    def check_mate():
         pass
+
+    def mate():
+        pass
+
+    def stale_mate():
+        pass
+
+    def run_game(self):
+        white_or_black = 0
+        while self.check_mate() == False and self.stale_mate() == False:
+            #just need to determine whos turn it is
+            if white_or_black % 2 == 0:
+                colour = 'white'
+            else:
+                colour = 'black'
+            piece_pos = input("Please input a piece position as a list [row, column]: ")
+            while Pieces.board[piece_pos[0]][piece_pos[1]] == None or Pieces.board[piece_pos[0]][piece_pos[1]].colour != colour:
+                piece_pos = input("This input was invalid, please try again: ")
+            piece = Pieces.board[piece_pos[0]][piece_pos[1]]
+            new_pos = input("Please input a position you wish to move to as a list [row, column]: ")
+            while piece.move(new_pos, Pieces.board) == False:
+                new_pos = input("The move you entered was invalid. Please try again: ")
+            
+
+            
+
+
+
+            #changes players turn
+            white_or_black += 1
+
+            
+            continue
+        pass
+
 
 game = Game()
 
