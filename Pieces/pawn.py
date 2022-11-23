@@ -41,7 +41,8 @@ class Pawn(Pieces):
 
     ## Need to add en passant
     ## is essentially a 'take_move' with extra conditions so could be added later!
-    def is_en_passant():
+    def is_en_passant(self, new_pos, board):
+        
         pass
 
     def move(self, new_pos, board):

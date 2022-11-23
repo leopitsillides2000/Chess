@@ -47,6 +47,8 @@ class Pieces:
         #adds piece to new position
         board[new_pos[0]][new_pos[1]] = self
 
+    '''
+    #dont know whether to put this here or leave the move functions within each piece class
     #is_move is a function input that is individual for each piece class
     #hop is wether the piece can pass over other pieces
     def move(self, new_pos, board, is_move, hop = False):
@@ -80,3 +82,4 @@ class Pieces:
                     self.apply_take(new_pos, board)
         else:
             print("This is an invalid move.")
+    '''

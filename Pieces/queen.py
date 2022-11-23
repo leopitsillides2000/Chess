@@ -15,7 +15,7 @@ class Queen(Pieces):
             return True
         else:
             return False
-    '''
+    
     def move(self, new_pos, board):
         #check if new_pos is a valid move
         if self.is_move(new_pos) == True:
@@ -34,7 +34,7 @@ class Queen(Pieces):
                 print("This is an invalid move. A piece is in the way.")
         else:
             print("This is an invalid move.")
-    '''
+    
 
 ##Tests
 
@@ -42,7 +42,7 @@ class Queen(Pieces):
 def test1():
     queen_white = Queen('white', np.array([7,4]))
     print(Pieces.board)
-    queen_white.move(np.array([5,2]), Pieces.board, queen_white.is_move)
+    queen_white.move(np.array([5,2]), Pieces.board)
     print(Pieces.board)
 
 #Regular horizontal move
