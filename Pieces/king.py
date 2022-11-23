@@ -2,8 +2,8 @@ from pieces import Pieces
 import numpy as np
 
 class King(Pieces):
-    def __init__(self, colour, start_pos, current_pos, is_alive=True):
-        super().__init__(colour, start_pos, current_pos, is_alive)
+    def __init__(self, colour, start_pos, is_alive=True):
+        super().__init__(colour, start_pos, is_alive)
         self.name = 'king'
         Pieces.board[start_pos[0]][start_pos[1]] = self
 
@@ -36,20 +36,28 @@ class King(Pieces):
 
 #Regular move
 def test1():
-    king_white = King('white', np.array([7,4]), np.array([7,4]))
+    king_white = King('white', np.array([7,4]))
     print(Pieces.board)
     king_white.move(np.array([6,3]), Pieces.board)
     print(Pieces.board)
 
 #Take move
 def test2():
-    king_white = King('white', np.array([7,4]), np.array([7,4]))
-    king_black = King('black', np.array([6,3]), np.array([6,3]))
+    king_white = King('white', np.array([7,4]))
+    king_black = King('black', np.array([6,3]))
     print(Pieces.board)
     king_white.move(np.array([6,3]), Pieces.board)
+    print(Pieces.board)
+    print(king_white.current_pos)
+
+def test3():
+    king_white = King('white', np.array([7,4]))
+    print(Pieces.board)
+    king_white.move(np.array([5,4]), Pieces.board)
     print(Pieces.board)
 
 #test1()
 test2()
+#test3()
 
 

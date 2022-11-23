@@ -2,8 +2,8 @@ from pieces import Pieces
 import numpy as np
 
 class Pawn(Pieces):
-    def __init__(self, colour, start_pos, current_pos, is_alive=True):
-        super().__init__(colour, start_pos, current_pos, is_alive)
+    def __init__(self, colour, start_pos, is_alive=True):
+        super().__init__(colour, start_pos, is_alive)
         self.name = 'pawn'
         #This puts the piece into its start position on the board
         Pieces.board[start_pos[0]][start_pos[1]] = self
@@ -89,22 +89,22 @@ class Pawn(Pieces):
 
 #regular move forward
 def test1():
-    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
+    pawn_black = Pawn('black', np.array([1,0]))
     print(Pieces.board)
     pawn_black.move(np.array([2,0]), Pieces.board)
     print(Pieces.board)
 
 #double start move
 def test2():
-    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
+    pawn_black = Pawn('black', np.array([1,0]))
     print(Pieces.board)
     pawn_black.move(np.array([3,0]), Pieces.board)
     print(Pieces.board)
 
 #take a piece
 def test3():
-    pawn_black = Pawn('black', np.array([1,0]), np.array([1,0]))
-    pawn_white = Pawn('white', np.array([2,1]), np.array([2,0]))
+    pawn_black = Pawn('black', np.array([1,0]))
+    pawn_white = Pawn('white', np.array([2,1]))
     print(Pieces.board)
     pawn_black.move(np.array([2,1]), Pieces.board)
     print(Pieces.board)
