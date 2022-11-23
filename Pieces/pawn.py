@@ -44,12 +44,6 @@ class Pawn(Pieces):
     def is_en_passant():
         pass
 
-    '''
-    Just trying to get an idea of how 'board' will be structured.
-    Think the best idea would be an 8x8 numpy matrix.
-    Each position will contain the a piece object or None.
-    '''
-
     def move(self, new_pos, board):
 
         if self.is_reg_move(new_pos) == True:
