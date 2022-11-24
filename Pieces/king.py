@@ -42,11 +42,14 @@ class King(Pieces):
             if piece == None:
                 self.apply_move(new_pos, board)
                 self.has_moved == True #taking note for castling
+                return
             elif piece.colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
+                return False
             else:
                 self.apply_take(new_pos, board)
                 self.has_moved == True #takingnote for castling
+                return
         elif self.is_castle(new_pos, board) == True:
             if self.simple_check_pos(new_pos, board) == True:
                 ## this is NOT right!! they dont go to each others position
@@ -59,10 +62,13 @@ class King(Pieces):
                 board[piece.current_pos[0]][piece.current_pos[1]] = piece # sets new rook position
                 board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
                 self.has_moved = True # taking note for castling
+                return
             else:
                 print("This is an invalid castle. There are peices in the way.")
+                return False
         else:
             print("This is an invalid move.")
+            return False
 
 
 ## Tests
@@ -104,6 +110,6 @@ def test_castle():
 #test1()
 #test2()
 #test3()
-test_castle()
+#test_castle()
 
 

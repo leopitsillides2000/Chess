@@ -42,46 +42,101 @@ class Game():
         bishop_b2 = Bishop('black', np.array([0,5]))
         queen_b = Queen('black', np.array([0,3]))
         king_b = King('black', np.array([0,4]))
-        print(Pieces.board)
-
-    def mate():
-        pass
+        #print(Pieces.board)
     
-    def check_mate():
-        pass
+    def nice_board(self):
+        nice_board = np.full((8,8), None)
+        for i in range(8):
+            for j in range(8):
+                if Pieces.board[i][j] != None:
+                    #nice_board[i][j] = np.array([Pieces.board[i][j].name[:2].title(), Pieces.board[i][j].colour[:1].title()])
+                    nice_board[i][j] = Pieces.board[i][j].name[:2].title() + '_' + Pieces.board[i][j].colour[:1].title()
+        print(nice_board)
 
-    def stale_mate():
-        pass
+
+    def mate(self):
+        ##Needs filling in
+        return False
+    
+    def check_mate(self):
+        ##Needs filling in
+        return False
+
+    def stale_mate(self):
+        ##Needs filling in
+        return False
+
+    def is_valid_input(self, pos):
+        try:
+            if isinstance(pos, list):
+                #print("all ok")
+                if all(isinstance(element, int) for element in pos):
+                    #print("all integers")
+                    if len(pos) == 2:
+                        #print("the list is of the correct length")
+                        if 0 <= pos[0] < 8 and 0 <= pos[1] < 8:
+                            #print("The position is within the board")
+                            return True
+                        else:
+                            ValueError("The position must be within the board, that is 0-7 for each input")
+                    else:
+                        raise ValueError('You have entered too many numbers')
+                else:
+                    raise ValueError('All elements inside your list are not integers')
+            else:
+                raise ValueError('Variable is not a list')
+
+        except ValueError as error:
+            print('Caught an error: ' + repr(error))
+            return False
+
+        
 
     def run_game(self):
         white_or_black = 0
 
         while self.check_mate() == False and self.stale_mate() == False:
+            #printing visually easy board
+            self.nice_board()
+
             #keeps track of en passant
             Pieces.en_pass_count += 1
             #just need to determine whos turn it is
-            if white_or_black  == 0:
-                colour = 'white'
-                #changes players turn
-                white_or_black += 1
-            else:
-                colour = 'black'
-                #changes players turn
-                white_or_black -= 1
-            piece_pos = input("Please input a piece position as a list [row, column]: ")
-            while Pieces.board[piece_pos[0]][piece_pos[1]] == None or Pieces.board[piece_pos[0]][piece_pos[1]].colour != colour:
-                piece_pos = input("This input was invalid, please try again: ")
+
+            new_pos = [0,0]
+            #break clause if player wants to start again
+            if new_pos != [-1,-1]:
+                if white_or_black  == 0:
+                    colour = 'white'
+                    #changes players turn
+                    white_or_black += 1
+                else:
+                    colour = 'black'
+                    #changes players turn
+                    white_or_black -= 1
+                print(f"It is {colour} players turn.")
+
+            #Gets input from player
+            ##Need to check whether input is in correct format and within the board
+            ## Would make more sense to put this in an np array for consistency
+            piece_pos = [int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))]
+            while self.is_valid_input(piece_pos) == False or Pieces.board[piece_pos[0]][piece_pos[1]] == None or Pieces.board[piece_pos[0]][piece_pos[1]].colour != colour:
+                print("This input is invalid, please try again.")
+                piece_pos = [int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))]
             piece = Pieces.board[piece_pos[0]][piece_pos[1]]
-            new_pos = input("Please input a position you wish to move to as a list [row, column]: ")
-            while piece.move(new_pos, Pieces.board) == False:
-                new_pos = input("The move you entered was invalid. Please try again: ")
-            
+            new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
+            while self.is_valid_input(new_pos) == False or piece.move(np.array(new_pos), Pieces.board) == False:
+                print("This input is invalid, please try again. To start the go again enter")
+                new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
+                if new_pos == [-1, -1]:
+                    break
+            #piece.move(np.array([new_pos]), Pieces.board)  ##Not sure whether the move will already be applied when the for loop works
             continue
         pass
 
 
 game = Game()
-
+game.run_game()
 
 
 

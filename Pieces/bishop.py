@@ -23,14 +23,19 @@ class Bishop(Pieces):
                 # if nothing exists in new_pos then move there
                 if board[new_pos[0]][new_pos[1]] == None:
                     self.apply_move(new_pos, board)
+                    return
                 # if own colour exists in new_pos then invalid move
                 elif board[new_pos[0]][new_pos[1]].colour == self.colour:
                     print("This is an invalid move. One of your pieces already exists in this position.")
+                    return False
                 # if opposite colour exists in new_pos then take piece
                 else:
                     self.apply_take(new_pos, board)
+                    return
             else:
                 print("This is an invalid move. A piece is in the way.")
+                return False
         else:
             print("This is an invalid move.")
+            return False
     
