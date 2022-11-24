@@ -2,9 +2,10 @@ from pieces import Pieces
 import numpy as np
 
 class King(Pieces):
-    def __init__(self, colour, start_pos, is_alive=True):
+    def __init__(self, colour, start_pos, is_alive=True, has_moved = False):
         super().__init__(colour, start_pos, is_alive)
         self.name = 'king'
+        self.has_moved = has_moved
         Pieces.board[start_pos[0]][start_pos[1]] = self
 
     #all moves for king are take moves
@@ -19,31 +20,43 @@ class King(Pieces):
         else:
             return False
 
+
+    ## This is not completely right
+    ## Ive written it thinking that you move the queen to the rook spot and it does the switch
+    ## Really you move the queen two spaces either side and the castling happens
+    ## change this eventually - shouldnt be that hard
     def is_castle(self, new_pos, board):
         piece = board[new_pos[0]][new_pos[1]]
         #if new_pos has rook
         if piece != None and piece.name == 'rook':
             #if rook is the same colour
             if self.colour == piece.colour:
-                #if neither rook nor king have moved
-                ##Not sure how to take account of whether the king and rook have moved
-                pass
-            pass
+                #if neither rook nor king have moved, return True
+                if piece.has_moved == False and self.has_moved == False:
+                    return True
         return False
         
     def move(self, new_pos, board):
-        new_space = board[new_pos[0]][new_pos[1]]
+        piece = board[new_pos[0]][new_pos[1]]
         if self.is_move(new_pos) == True:
-            if new_space == None:
+            if piece == None:
                 self.apply_move(new_pos, board)
-            elif new_space.colour == self.colour:
+                self.has_moved == True #taking note for castling
+            elif piece.colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
             else:
                 self.apply_take(new_pos, board)
-                
+                self.has_moved == True #takingnote for castling
         elif self.is_castle(new_pos, board) == True:
             if self.simple_check_pos(new_pos, board) == True:
-                new_space, board[self.current_pos[0]][self.current_pos[1]] = self, new_space
+                ## this is NOT right!! they dont go to each others position
+                pos_dir = new_pos - self.current_pos
+                pos_dir_hat = (pos_dir / abs(pos_dir[1])).astype(int) # this is to get a unit directional vector since we know only horizontal
+                board[self.current_pos[0]][self.current_pos[1] + 2*pos_dir_hat[1]] = self #sets the correct king position
+                board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
+                board[self.current_pos[0]][self.current_pos[1] + pos_dir_hat[1]] = piece # sets new rook position
+                board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
+                self.has_moved = True # taking note for castling
             else:
                 print("This is an invalid castle. There are peices in the way.")
         else:
@@ -74,8 +87,21 @@ def test3():
     king_white.move(np.array([5,4]), Pieces.board)
     print(Pieces.board)
 
+def test_castle():
+    from rook import Rook
+    from bishop import Bishop
+
+    king_white = King('white', np.array([7,4]))
+    rook_white = Rook('white', np.array([7,7]))
+    bishop_white = Bishop('white', np.array([7,5]))
+
+    print(Pieces.board)
+    king_white.move(np.array([7,7]), Pieces.board)
+    print(Pieces.board)
+
 #test1()
-test2()
+#test2()
 #test3()
+test_castle()
 
 
