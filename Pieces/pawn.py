@@ -42,7 +42,7 @@ class Pawn(Pieces):
     ## Need to add en passant
     ## is essentially a 'take_move' with extra conditions so could be added later!
     def is_en_passant(self, new_pos, board):
-        
+
         pass
 
     def move(self, new_pos, board):
@@ -58,8 +58,15 @@ class Pawn(Pieces):
             
             # if position is empty either we cant move or it is an en passant
             if board[new_pos[0]][new_pos[1]] == None:
-                ## en passant condition
-                pass
+                # if non empty and the en_pass piece position is the row = current_pos and column = new_pos
+                if Pieces.en_pass != None and Pieces.en_pass_count == 1:
+                    if np.array_equal(np.array([self.current_pos[0],new_pos[1]]), Pieces.en_pass.current_pos) == True:
+                        self.apply_move(new_pos)
+                        board[self.current_pos[0],new_pos[1]].is_alive = False
+                        board[self.current_pos[0],new_pos[1]] = None
+                        return
+                else:
+                    print("This is an invalid move. En passant is not possible right now")
             # if our piece is in new_pos then this is an invalid move
             elif board[new_pos[0]][new_pos[1]].colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
@@ -74,8 +81,9 @@ class Pawn(Pieces):
             elif board[new_pos[0]][new_pos[1]] != None:
                 print("This is an invalid move. A piece already exists in this position.")
             else:
-                print(1)
                 self.apply_move(new_pos, board)
+                Pieces.en_pass = self
+                Pieces.en_pass_count = 0
                 return
         else:
             print("This is an invalid move. Please try again.")

@@ -53,8 +53,10 @@ class King(Pieces):
                 pos_dir = new_pos - self.current_pos
                 pos_dir_hat = (pos_dir / abs(pos_dir[1])).astype(int) # this is to get a unit directional vector since we know only horizontal
                 board[self.current_pos[0]][self.current_pos[1] + 2*pos_dir_hat[1]] = self #sets the correct king position
+                self.current_pos = self.current_pos + 2*pos_dir_hat #changes kings current_pos
                 board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
-                board[self.current_pos[0]][self.current_pos[1] + pos_dir_hat[1]] = piece # sets new rook position
+                piece.current_pos = self.current_pos + pos_dir_hat #changes rooks current_pos
+                board[piece.current_pos[0]][piece.current_pos[1]] = piece # sets new rook position
                 board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
                 self.has_moved = True # taking note for castling
             else:

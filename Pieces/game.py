@@ -55,7 +55,10 @@ class Game():
 
     def run_game(self):
         white_or_black = 0
+
         while self.check_mate() == False and self.stale_mate() == False:
+            #keeps track of en passant
+            Pieces.en_pass_count += 1
             #just need to determine whos turn it is
             if white_or_black  == 0:
                 colour = 'white'

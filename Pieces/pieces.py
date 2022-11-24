@@ -2,6 +2,8 @@ import numpy as np
 
 class Pieces:
     board = np.full((8,8), None)
+    en_pass = None #keep track of whether en_passant is possible
+    en_pass_count = 0
 
     def __init__(self, colour, start_pos, is_alive = True):
         self.colour = colour
