@@ -90,7 +90,7 @@ class Game():
     def run_game(self):
         white_or_black = 0
         new_pos = [0,0]
-        
+
         while self.check_mate() == False and self.stale_mate() == False:
             #printing visually easy board
             self.nice_board()
@@ -101,6 +101,7 @@ class Game():
 
             #break clause if player wants to start again
             if new_pos != [-1,-1]:
+                #making sure its the correct colours turn
                 if white_or_black  == 0:
                     colour = 'white'
                     #changes players turn
