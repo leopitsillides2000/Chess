@@ -10,6 +10,7 @@ import numpy as np
 
 class Game():
     def __init__(self):
+        ##might need to add self before all of these
         pawn_w1 = Pawn('white', np.array([6,0]))
         pawn_w2 = Pawn('white', np.array([6,1]))
         pawn_w3 = Pawn('white', np.array([6,2]))
@@ -57,15 +58,18 @@ class Game():
         print(nice_board)
 
 
-    def mate(self):
+    def is_check(self, king):
         ##Needs filling in
+        
+        #check
+
         return False
     
-    def check_mate(self):
+    def is_check_mate(self):
         ##Needs filling in
         return False
 
-    def stale_mate(self):
+    def is_stale_mate(self):
         ##Needs filling in
         return False
 
@@ -91,7 +95,7 @@ class Game():
         white_or_black = 0
         new_pos = [0,0]
 
-        while self.check_mate() == False and self.stale_mate() == False:
+        while self.is_check_mate() == False and self.is_stale_mate() == False:
             #printing visually easy board
             self.nice_board()
 
@@ -106,10 +110,16 @@ class Game():
                     colour = 'white'
                     #changes players turn
                     white_or_black += 1
+                    #sets kings for whites go, used for check/checkmate etc.
+                    king = self.king_w
+                    king_op = self.king_b
                 else:
                     colour = 'black'
                     #changes players turn
                     white_or_black -= 1
+                    #sets kings for blacks go, used for check/checkmate etc.
+                    king = self.king_b
+                    king_op = self.king_w
                 print(f"It is {colour} players turn.")
 
             #Gets input from player
@@ -133,6 +143,19 @@ class Game():
                     new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
                     if new_pos == [-1, -1]:
                         break
+                ## If the move puts own king in check or keeps own king in check: then ask for another move
+                ## If (is_check == True and move does not block threat) or (direction between king and original position of moved piece there is a threat): repeat choice
+
+                ## could move this up higher
+                '''
+                if self.is_check(king) == True:
+                    new_pos = [-1,-1]
+                    break
+
+                '''
+                
+                ## If opposite king can be attacked after move: put is_check = True
+                
         print('The game has ended!')
 
 

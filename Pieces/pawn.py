@@ -39,7 +39,7 @@ class Pawn(Pieces):
         else:
             return False
 
-    def move(self, new_pos, board):
+    def move(self, new_pos, board, apply = True):
 
         if self.is_reg_move(new_pos) == True:
             # if position is not empty give an invalid message
@@ -47,8 +47,9 @@ class Pawn(Pieces):
                 print("This is an invalid move. A piece already exists in this position.")
                 return False
             else:
-                self.apply_move(new_pos, board)
-                return
+                if apply == True:
+                    self.apply_move(new_pos, board)
+                return True
         elif self.is_take_move(new_pos) == True:
             
             # if position is empty either we cant move or it is an en passant
@@ -56,10 +57,11 @@ class Pawn(Pieces):
                 # if non empty and the en_pass piece position is the row = current_pos and column = new_pos
                 if Pieces.en_pass != None and Pieces.en_pass_count == 1:
                     if np.array_equal(np.array([self.current_pos[0],new_pos[1]]), Pieces.en_pass.current_pos) == True:
-                        board[self.current_pos[0],new_pos[1]].is_alive = False
-                        board[self.current_pos[0],new_pos[1]] = None
-                        self.apply_move(new_pos, board)
-                        return
+                        if apply == True:
+                            board[self.current_pos[0],new_pos[1]].is_alive = False
+                            board[self.current_pos[0],new_pos[1]] = None
+                            self.apply_move(new_pos, board)
+                        return True
                 else:
                     print("This is an invalid move. En passant is not possible right now")
                     return False
@@ -68,8 +70,9 @@ class Pawn(Pieces):
                 print("This is an invalid move. One of your pieces already exists in this position.")
                 return False
             else:
-                self.apply_take(new_pos, board)
-                return
+                if apply == True:
+                    self.apply_take(new_pos, board)
+                return True
         elif self.is_start_move(new_pos) == True:
             #simple_check_pos checks if a piece exists between current_pos and new_pos
             if self.simple_check_pos(new_pos, board) == False:
@@ -80,10 +83,11 @@ class Pawn(Pieces):
                 print("This is an invalid move. A piece already exists in this position.")
                 return False
             else:
-                self.apply_move(new_pos, board)
-                Pieces.en_pass = self
-                Pieces.en_pass_count = 0
-                return
+                if apply == True:
+                    self.apply_move(new_pos, board)
+                    Pieces.en_pass = self
+                    Pieces.en_pass_count = 0
+                return True
         else:
             print("This is an invalid move. Please try again.")
             return False
