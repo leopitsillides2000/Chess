@@ -63,11 +63,33 @@ class Game():
         #if the previously moved piece can attack the current king, return True
         if Pieces.board[prev_new_pos[0]][prev_new_pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
             return True
-        # elif previously moved pieces prev_current_pos opened up a line on the king
 
-        #elif moved pieces original position(piece_pos) was blocking an attack to king
+        # if moved pieces original position(piece_pos) was blocking an attack to king
+        #finding direction between king and moved piece
+        pos_dir = piece_pos - king.current_pos
+        pos_dir_hat = (pos_dir/(max(abs(pos_dir)))).astype(int)
+        #if the direction between king and moved piece is either not diagonal or horizontal/vertical then return False
+        if np.dot(pos_dir_hat, pos_dir_hat) != 2 and np.dot(pos_dir_hat, pos_dir_hat) != 1:
+            return False
+        else:
+            pos = king.current_pos + pos_dir_hat
+            print(pos)
+            #while pos is within the board
+            while 0<=pos[0]<=8 and 0<=pos[1]<=8:
+                #if space is non-empty
+                if Pieces.board[pos[0]][pos[1]] != None:
+                    #if colour is same return False
+                    if Pieces.board[pos[0]][pos[1]].colour == king.colour:
+                        return False
+                    else:
+                        #if colour is opposite and the take on king is valid return True
+                        if Pieces.board[pos[0]][pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
+                            return True
+                    break
+                pos = pos + pos_dir_hat
+            return False
 
-        #need to also check for knights
+        #need to also check for knights, this might need to be at the beginning!
 
         #need to check if king is the one that moved whether it has moved into a position which is check
 
@@ -168,7 +190,7 @@ class Game():
                 piece.move(np.array(new_pos), Pieces.board)
                 #if king is in check
                 if self.is_check(king, piece_pos, new_pos, prev_current_pos, prev_new_pos) == True:
-                    #reset the board
+                    #reset the board to previous one
                     Pieces.board[piece_pos[0]][piece_pos[1]] = piece
                     Pieces.board[new_pos[0]][new_pos[1]] = space
 
