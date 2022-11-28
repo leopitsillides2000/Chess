@@ -45,6 +45,7 @@ class Game():
         self.king_b = King('black', np.array([0,4]))
         #print(Pieces.board)
     
+    #this just gives a nicer representation of the board for visual aid
     def nice_board(self):
         nice_board = np.full((8,8), None)
         for i in range(8):
@@ -57,7 +58,49 @@ class Game():
 
         print(nice_board)
 
+    #this checks for check in all scenarios
+    ## just need to add possible knight threat
+    def is_check(self, king, prev_new_pos):
 
+        #check to see if threat by knight
+        if Pieces.board[prev_new_pos[0]][prev_new_pos[1]].name == 'knight':
+            if Pieces.board[prev_new_pos[0]][prev_new_pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
+                return True
+
+        # Lambda function to change through the different angles
+        dir = lambda angle: np.around(np.array([np.sin(angle), np.cos(angle)])/max(abs(np.array([np.cos(angle), np.sin(angle)])))).astype(int)
+        #Changes to True if king is under threat
+        any_threat = False
+
+        #this is the angle to change the dir lambda function
+        theta = 0
+        #keep going until 1/8 turn around the unit circle is checked
+        while theta < 2*np.pi:
+            #sets position that is being checked
+            pos = king.current_pos + dir(theta)
+            #keep going while the position is still within the board
+            while 0 <= pos[0] < 8 and 0 <= pos[1] < 8:
+                #if space is non-empty
+                if Pieces.board[pos[0]][pos[1]] != None:
+                    #if colour is same return False
+                    if Pieces.board[pos[0]][pos[1]].colour == king.colour:
+                        break
+                    else:
+                        #if colour is opposite and the take on king is valid any_threat = True
+                        if Pieces.board[pos[0]][pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
+                            any_threat = True
+                        break
+                else:
+                    #adjusts the position along the direction
+                    pos = pos + dir(theta)
+            #adds 1/8 turn to theta to check the next direction
+            theta = theta + np.pi/4
+        #print(any_threat)
+        return any_threat
+
+        
+    '''
+    ###OLD is_check ###
     def is_check(self, king, piece_pos, new_pos, prev_current_pos, prev_new_pos):
         #print(Pieces.board[prev_new_pos[0]][prev_new_pos[1]].name)
         #if the previously moved piece can attack the current king, return True
@@ -81,23 +124,30 @@ class Game():
                     #if colour is same return False
                     if Pieces.board[pos[0]][pos[1]].colour == king.colour:
                         return False
+                        break
                     else:
                         #if colour is opposite and the take on king is valid return True
                         if Pieces.board[pos[0]][pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
                             return True
+                        break
                     break
                 pos = pos + pos_dir_hat
             return False
 
+        #need to check if king is the one that moved whether it has moved into a position which is check
+
         #need to also check for knights, this might need to be at the beginning!
 
-        #need to check if king is the one that moved whether it has moved into a position which is check
+        #need to put threat if castling
+
+        
 
         ##Needs filling in
         
         #check
 
         return False
+        '''
     
     def is_check_mate(self):
         ##Needs filling in
@@ -129,8 +179,7 @@ class Game():
         white_or_black = 0
         new_pos = [0,0]
 
-        #May need previous current_pos and previous new_pos for determining check
-        prev_current_pos = np.array([0,0])
+        #previous new_pos for determining knight check
         prev_new_pos = np.array([0,0])
 
         while self.is_check_mate() == False and self.is_stale_mate() == False:
@@ -150,14 +199,12 @@ class Game():
                     white_or_black += 1
                     #sets kings for whites go, used for check/checkmate etc.
                     king = self.king_w
-                    king_op = self.king_b
                 else:
                     colour = 'black'
                     #changes players turn
                     white_or_black -= 1
                     #sets kings for blacks go, used for check/checkmate etc.
                     king = self.king_b
-                    king_op = self.king_w
                 print(f"It is {colour} players turn.")
 
             #Gets input from player
@@ -189,7 +236,7 @@ class Game():
                 #move the piece
                 piece.move(np.array(new_pos), Pieces.board)
                 #if king is in check
-                if self.is_check(king, piece_pos, new_pos, prev_current_pos, prev_new_pos) == True:
+                if self.is_check(king, prev_new_pos) == True:
                     #reset the board to previous one
                     Pieces.board[piece_pos[0]][piece_pos[1]] = piece
                     Pieces.board[new_pos[0]][new_pos[1]] = space
@@ -199,28 +246,9 @@ class Game():
                     print("This move is invalid. There is a check on the King.")
                 else:
 
-                    #set prev_current_pos and prev_new_pos to memory
-                    prev_current_pos = np.array(piece_pos)
+                    #set prev_current_pos and prev_new_pos to memory for knight check
                     prev_new_pos = np.array(new_pos)
             
-                
-            
-
-
-
-                ## If the move puts own king in check or keeps own king in check: then ask for another move
-                ## If (is_check == True and move does not block threat) or (direction between king and original position of moved piece there is a threat): repeat choice
-
-                ## could move this up higher
-                '''
-                if self.is_check(king) == True:
-                    new_pos = [-1,-1]
-                    break
-
-                '''
-                
-                ## If opposite king can be attacked after move: put is_check = True
-
         print('The game has ended!')
 
 
