@@ -230,8 +230,9 @@ class Game():
                     if new_pos == [-1, -1]:
                         break
 
+            ##this won't work for castling into a check!! I don't think
             if new_pos != [-1,-1]:
-                #remember what was in theh new space in case we have to revert
+                #remember what was in the new space in case we have to revert
                 space = Pieces.board[new_pos[0]][new_pos[1]]
                 #move the piece
                 piece.move(np.array(new_pos), Pieces.board)
@@ -245,10 +246,10 @@ class Game():
                     new_pos = [-1, -1]
                     print("This move is invalid. There is a check on the King.")
                 else:
-
                     #set prev_current_pos and prev_new_pos to memory for knight check
                     prev_new_pos = np.array(new_pos)
             
+
         print('The game has ended!')
 
 

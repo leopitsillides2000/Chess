@@ -33,7 +33,9 @@ class King(Pieces):
             if self.colour == piece.colour:
                 #if neither rook nor king have moved, return True
                 if piece.has_moved == False and self.has_moved == False:
-                    return True
+                    #if there are no pieces between the king and the rook
+                    if self.simple_check_pos(new_pos, board) == True:
+                        return True
         return False
         
     def move(self, new_pos, board, apply = True):
@@ -53,22 +55,21 @@ class King(Pieces):
                     self.has_moved == True #takingnote for castling
                 return True
         elif self.is_castle(new_pos, board) == True:
-            if self.simple_check_pos(new_pos, board) == True:
-                if apply == True:
-                    ## this is NOT right!! they dont go to each others position
-                    pos_dir = new_pos - self.current_pos
-                    pos_dir_hat = (pos_dir / abs(pos_dir[1])).astype(int) # this is to get a unit directional vector since we know only horizontal
-                    board[self.current_pos[0]][self.current_pos[1] + 2*pos_dir_hat[1]] = self #sets the correct king position
-                    self.current_pos = self.current_pos + 2*pos_dir_hat #changes kings current_pos
-                    board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
-                    piece.current_pos = self.current_pos + pos_dir_hat #changes rooks current_pos
-                    board[piece.current_pos[0]][piece.current_pos[1]] = piece # sets new rook position
-                    board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
-                    self.has_moved = True # taking note for castling
-                return True
-            else:
-                print("This is an invalid castle. There are peices in the way.")
-                return False
+            if apply == True:
+                ## this is NOT right!! they dont go to each others position
+                pos_dir = new_pos - self.current_pos
+                pos_dir_hat = (pos_dir / abs(pos_dir[1])).astype(int) # this is to get a unit directional vector since we know only horizontal
+                #changes king
+                board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
+                self.current_pos = self.current_pos + 2*pos_dir_hat #changes kings current_pos
+                board[self.current_pos[0]][self.current_pos[1]] = self #sets the correct king position
+                #changes rook
+                board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
+                piece.current_pos = self.current_pos - pos_dir_hat #changes rooks current_pos
+                board[piece.current_pos[0]][piece.current_pos[1]] = piece # sets new rook position
+
+                self.has_moved = True # taking note for castling
+            return True
         else:
             print("This is an invalid move.")
             return False
