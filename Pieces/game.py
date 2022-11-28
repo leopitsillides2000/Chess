@@ -26,7 +26,7 @@ class Game():
         bishop_w1 = Bishop('white', np.array([7,2]))
         bishop_w2 = Bishop('white', np.array([7,5]))
         queen_w = Queen('white', np.array([7,3]))
-        king_w = King('white', np.array([7,4]))
+        self.king_w = King('white', np.array([7,4]))
         pawn_b1 = Pawn('black', np.array([1,0]))
         pawn_b2 = Pawn('black', np.array([1,1]))
         pawn_b3 = Pawn('black', np.array([1,2]))
@@ -42,7 +42,7 @@ class Game():
         bishop_b1 = Bishop('black', np.array([0,2]))
         bishop_b2 = Bishop('black', np.array([0,5]))
         queen_b = Queen('black', np.array([0,3]))
-        king_b = King('black', np.array([0,4]))
+        self.king_b = King('black', np.array([0,4]))
         #print(Pieces.board)
     
     def nice_board(self):
@@ -58,7 +58,19 @@ class Game():
         print(nice_board)
 
 
-    def is_check(self, king):
+    def is_check(self, king, piece_pos, new_pos, prev_current_pos, prev_new_pos):
+        #print(Pieces.board[prev_new_pos[0]][prev_new_pos[1]].name)
+        #if the previously moved piece can attack the current king, return True
+        if Pieces.board[prev_new_pos[0]][prev_new_pos[1]].move(king.current_pos, Pieces.board, apply = False) == True:
+            return True
+        # elif previously moved pieces prev_current_pos opened up a line on the king
+
+        #elif moved pieces original position(piece_pos) was blocking an attack to king
+
+        #need to also check for knights
+
+        #need to check if king is the one that moved whether it has moved into a position which is check
+
         ##Needs filling in
         
         #check
@@ -95,6 +107,10 @@ class Game():
         white_or_black = 0
         new_pos = [0,0]
 
+        #May need previous current_pos and previous new_pos for determining check
+        prev_current_pos = np.array([0,0])
+        prev_new_pos = np.array([0,0])
+
         while self.is_check_mate() == False and self.is_stale_mate() == False:
             #printing visually easy board
             self.nice_board()
@@ -129,6 +145,7 @@ class Game():
             while self.is_valid_input(piece_pos) == False or Pieces.board[piece_pos[0]][piece_pos[1]] == None or Pieces.board[piece_pos[0]][piece_pos[1]].colour != colour:
                 print("This input is invalid, please try again.")
                 piece_pos = [int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))]
+            
             #create a piece variable, remeber board cant be adapted from this variable
             piece = Pieces.board[piece_pos[0]][piece_pos[1]]
 
@@ -138,11 +155,37 @@ class Game():
             new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
             
             if new_pos != [-1,-1]:
-                while self.is_valid_input(new_pos) == False or piece.move(np.array(new_pos), Pieces.board) == False:
+                while self.is_valid_input(new_pos) == False or piece.move(np.array(new_pos), Pieces.board, apply = False) == False:
                     print("This input is invalid, please try again.")
                     new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
                     if new_pos == [-1, -1]:
                         break
+
+            if new_pos != [-1,-1]:
+                #remember what was in theh new space in case we have to revert
+                space = Pieces.board[new_pos[0]][new_pos[1]]
+                #move the piece
+                piece.move(np.array(new_pos), Pieces.board)
+                #if king is in check
+                if self.is_check(king, piece_pos, new_pos, prev_current_pos, prev_new_pos) == True:
+                    #reset the board
+                    Pieces.board[piece_pos[0]][piece_pos[1]] = piece
+                    Pieces.board[new_pos[0]][new_pos[1]] = space
+
+                    #start the go again
+                    new_pos = [-1, -1]
+                    print("This move is invalid. There is a check on the King.")
+                else:
+
+                    #set prev_current_pos and prev_new_pos to memory
+                    prev_current_pos = np.array(piece_pos)
+                    prev_new_pos = np.array(new_pos)
+            
+                
+            
+
+
+
                 ## If the move puts own king in check or keeps own king in check: then ask for another move
                 ## If (is_check == True and move does not block threat) or (direction between king and original position of moved piece there is a threat): repeat choice
 
@@ -155,7 +198,7 @@ class Game():
                 '''
                 
                 ## If opposite king can be attacked after move: put is_check = True
-                
+
         print('The game has ended!')
 
 
