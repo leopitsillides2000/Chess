@@ -149,7 +149,7 @@ class Game():
         return False
         '''
     
-    def is_check_mate(self):
+    def is_check_mate(self, king, prev_new_pos):
         ##Needs filling in
         return False
 
@@ -173,7 +173,36 @@ class Game():
             print('Caught an error: ' + repr(error))
             return False
 
-        
+    #check whether pawn has reached the end of the board
+    def is_promotion(self, new_pos):
+        if Pieces.board[new_pos[0]][new_pos[1]].name == 'pawn' and (new_pos[0] == 0 or new_pos[0] == 7):
+            return True
+        else:
+            return False
+
+    #apply promotion to the board
+    def promotion(self, new_pos):
+
+        #what piece does player want to promote to
+        piece_letter = '0'
+        while piece_letter not in ['Q', 'K', 'B', 'R']:
+            piece_letter = input("Please type the letter of the piece you wish to promote, Q=queen, K=knight, B=bishop and R=rook: ").upper()
+
+        piece_colour = Pieces.board[new_pos[0]][new_pos[1]].colour
+        piece_pos = np.array(new_pos)
+
+        #pawn is no longer alive
+        Pieces.board[new_pos[0]][new_pos[1]].is_alive  = False
+
+        if piece_letter == 'Q':
+            Queen(piece_colour, piece_pos)
+        elif piece_letter == 'K':
+            Knight(piece_colour, piece_pos)
+        elif piece_letter == 'B':
+            Bishop(piece_colour, piece_pos)
+        elif piece_letter == 'R':
+            Rook(piece_colour, piece_pos)
+
 
     def run_game(self):
         white_or_black = 0
@@ -248,8 +277,13 @@ class Game():
                 else:
                     #set prev_current_pos and prev_new_pos to memory for knight check
                     prev_new_pos = np.array(new_pos)
-            
 
+                    #this is to cover the pawn change at the end
+                    ##NEED TO CHECK WHETHER THIS WORKS
+                    if self.is_promotion(new_pos) == True:
+                        self.promotion(new_pos)
+                        
+                        
         print('The game has ended!')
 
 
