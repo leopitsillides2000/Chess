@@ -22,8 +22,8 @@ class King(Pieces):
 
 
     ## This is not completely right
-    ## Ive written it thinking that you move the queen to the rook spot and it does the switch
-    ## Really you move the queen two spaces either side and the castling happens
+    ## Ive written it thinking that you move the king to the rook spot and it does the switch
+    ## Really you move the king two spaces either side and the castling happens
     ## change this eventually - shouldnt be that hard
     def is_castle(self, new_pos, board):
         piece = board[new_pos[0]][new_pos[1]]
@@ -47,6 +47,7 @@ class King(Pieces):
                     self.has_moved == True #taking note for castling
                 return True
             elif piece.colour == self.colour:
+                print('K')
                 print("This is an invalid move. One of your pieces already exists in this position.")
                 return False
             else:
