@@ -6,7 +6,6 @@ from bishop import Bishop
 from rook import Rook
 from knight import Knight
 import numpy as np
-from operator import attrgetter
 
 
 class Game():
@@ -146,8 +145,6 @@ class Game():
                 #add to angle to check the next direction
                 angle += np.pi/4
 
-            ##need to check for castling!
-
             #making list of positions to move to!
             if Pieces.board[threat_pos[0]][threat_pos[1]].name != 'knight':
                 #calculating direction from threat piece to king
@@ -176,14 +173,58 @@ class Game():
             
             return True
 
-    def is_stale_mate(self):
-        ##Needs filling in
+    def is_stale_mate(self, colour):
+        #this is a list of all pieces that are the same colour as the player and are alive
+        piece_list = [piece for piece in Pieces.instances if (piece.colour == colour and piece.is_alive == True)]
+        
+
+        for piece in piece_list:
+            #different condition for knight
+            if piece.name == 'knight':
+                #check all knight positions
+                pass
+            else:
+                #lambda funcion to give each directional move
+                direction = lambda theta: np.around(np.array([np.cos(theta), np.sin(theta)])/max(abs(np.array([np.cos(theta), np.sin(theta)])))).astype(int)
+            
+                angle = 0
+                #continue until we have traversed each eighth
+                while angle < 2*np.pi:
+                    #possible position for the piece
+                    check_pos = piece.current_pos + direction(angle)
+
+                    #if within the bounds of the board
+                    if 0 <= check_pos[0] < 8 and 0 <= check_pos[1] < 8:
+                        #if the piece can move then it cannot be stalemate
+                        if piece.move(check_pos, Pieces.board, apply=False) == True:
+                            return False
+                        else:
+                            continue
+                    else:
+                        continue
+                
+        return True
+
+        '''
+        FOR ABOVE: this will work for all pieces but not kings
+        we also need to distingusih whether the king moves to check
+        Not possible without applying move as ive written it
+        '''
+                    
+
+
+                #check direction
+                    #in each direction check the line
+                    #when a move is invalid along the line, break
+
         return False
 
     def is_valid_input(self, pos):
         try:
             #checks if inputs are integers
-            if all(isinstance(element, int) for element in pos):
+
+            #if all(isinstance(element, int) for element in pos):
+            if pos[0].is_integer() == True and pos[1].is_integer() == True:
                 #checks if they are within boounds of the board
                 if 0 <= pos[0] < 8 and 0 <= pos[1] < 8:
                     return True
@@ -229,7 +270,7 @@ class Game():
 
     def run_game(self):
         white_or_black = 0
-        new_pos = [0,0]
+        new_pos = np.array([0,0])
 
         #previous new_pos for determining knight check
         prev_new_pos = np.array([0,0])
@@ -244,7 +285,7 @@ class Game():
             #just need to determine whos turn it is
 
             #break clause if player wants to start again
-            if new_pos != [-1,-1]:
+            if (new_pos == np.array([-1,-1])).all() == False:
                 #making sure its the correct colours turn
                 if white_or_black  == 0:
                     colour = 'white'
@@ -263,12 +304,11 @@ class Game():
                 print(f"It is {colour} players turn.")
 
             #Gets input from player
-            ## Would make more sense to put this in an np array for consistency
-            piece_pos = [int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))]
+            piece_pos = np.array([int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))])
             #repeat if input is invalid, the input is not a piece, or the piece is not the right colour
             while self.is_valid_input(piece_pos) == False or Pieces.board[piece_pos[0]][piece_pos[1]] == None or Pieces.board[piece_pos[0]][piece_pos[1]].colour != colour:
                 print("This input is invalid, please try again.")
-                piece_pos = [int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))]
+                piece_pos = np.array([int(input("Please input the row of the piece position: ")), int(input("Please input the column of the piece position: "))])
             
             #create a piece variable, remeber board cant be adapted from this variable
             piece = Pieces.board[piece_pos[0]][piece_pos[1]]
@@ -276,40 +316,50 @@ class Game():
             #Option to start the choices again by entering [-1,-1]
             print("If you would like to start your choices again please enter -1 then -1 again.")
             #Gets input from player for desired new position
-            new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
+            new_pos = np.array([int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))])
             
-            if new_pos != [-1,-1]:
-                while self.is_valid_input(new_pos) == False or piece.move(np.array(new_pos), Pieces.board, apply = False) == False:
+            if (new_pos == np.array([-1,-1])).all() == False:
+                while self.is_valid_input(new_pos) == False or piece.move(new_pos, Pieces.board, apply = False) == False:
                     print("This input is invalid, please try again.")
-                    new_pos = [int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))]
-                    if new_pos == [-1, -1]:
+                    new_pos = np.array([int(input("Please input the row of the new position: ")), int(input("Please input the column of the new position: "))])
+                    if (new_pos == np.array([-1,-1])).all() == True:
                         break
 
             ##this won't work for castling into a check!! I don't think
-            if new_pos != [-1,-1]:
+            if (new_pos == np.array([-1,-1])).all() == False:
                 #remember what was in the new space in case we have to revert
                 space = Pieces.board[new_pos[0]][new_pos[1]]
-                #move the piece
-                piece.move(np.array(new_pos), Pieces.board)
 
-                #if own king is in check
+                ##if king is under check
+                ##we cannot apply castling - so piece.move cannot be a castle
+                if self.is_check(king, prev_new_pos)[0] == True:
+                    king.is_check == True
+
+                #move the piece
+                piece.move(new_pos, Pieces.board)
+
+                #if we move our own king into check
                 if self.is_check(king, prev_new_pos)[0] == True:
                     #reset the board to previous one
                     Pieces.board[piece_pos[0]][piece_pos[1]] = piece
-                    piece.current_pos = np.array(piece_pos)
+                    piece.current_pos = piece_pos
                     Pieces.board[new_pos[0]][new_pos[1]] = space
 
-                    #start the go again
-                    new_pos = [-1, -1]
-                    print("This move is invalid. There is a check on the King.")
-                #if there is check mate on king then break the while loop
-                ##might not be prev_new_pos, could just be new_pos?
-                elif self.is_check_mate(king_op, np.array(new_pos)) == True:
-                    break
-                else:
-                    #set prev_current_pos and prev_new_pos to memory for knight check
-                    prev_new_pos = np.array(new_pos)
+                    ##NEED to go back to correct board of a castle put king in check
+                    ##Need to replace rook and king to original positions
+                    
+                    #if there is check mate on king then break the while loop
+                    if self.is_check_mate(king_op, new_pos) == True:
+                        break
 
+                    #start the go again
+                    new_pos = np.array([-1, -1])
+                    print("This move is invalid. There is a check on the King.")
+                else:
+                    king.is_check == False
+                    #set prev_new_pos to memory for knight check
+                    prev_new_pos = new_pos
+                    
                     #this is to cover the pawn change at the end
                     ##NEED TO CHECK WHETHER THIS WORKS
                     if self.is_promotion(new_pos) == True:
@@ -325,3 +375,40 @@ game.run_game()
 
 
 
+def run_game(self):
+
+
+    #while checkmate and stalemate are false - stay in the game
+        
+        #print nice board
+
+        #input piece initialised to [-1,-1]
+
+        #while input is invalid  ##invalid here refers to whether this is a piece of correct colour
+
+            #get input from player ##if player would like to start again input [-1,-1]
+
+            #if input == [-1,-1]
+                #break and stay on same turn
+
+        #input position initialised
+
+        #while input is invalid  ##invalid here refers to whether space is blank or opposite colour and the piece can move like that
+    
+            # get input from player ##if player would like to start again input [-1,-1]
+
+            #if input == [-1,-1]
+                #break and stay on same turn
+        
+            #if current colour is in check after move    --  maybe add this to while loop?
+                #invalid move, repeat input
+        
+        #if input is promotion
+            #apply promotion
+
+        #apply move
+
+    #END GAME
+
+
+    pass
