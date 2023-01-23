@@ -15,21 +15,23 @@ class Knight(Pieces):
         else:
             return False
     
-    def move(self, new_pos, board):
+    def move(self, new_pos, board, apply = True):
         #check if new_pos is a valid move
         if self.is_move(new_pos) == True:
             # if nothing exists in new_pos then move there
             if board[new_pos[0]][new_pos[1]] == None:
-                self.apply_move(new_pos, board)
-                return
+                if apply == True:
+                    self.apply_move(new_pos, board)
+                return True
             # if own colour exists in new_pos then invalid move
             elif board[new_pos[0]][new_pos[1]].colour == self.colour:
                 print("This is an invalid move. One of your pieces already exists in this position.")
                 return False
             # if opposite colour exists in new_pos then take piece
             else:
-                self.apply_take(new_pos, board)
-                return 
+                if apply == True:
+                    self.apply_take(new_pos, board)
+                return True
         else:
             print("This is an invalid move.")
             return False
