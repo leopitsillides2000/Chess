@@ -2,10 +2,11 @@ from pieces import Pieces
 import numpy as np
 
 class King(Pieces):
-    def __init__(self, colour, start_pos, is_alive=True, has_moved = False):
+    def __init__(self, colour, start_pos, is_alive=True, has_moved = False, is_check = False):
         super().__init__(colour, start_pos, is_alive)
         self.name = 'king'
         self.has_moved = has_moved
+        self.is_check = is_check
         Pieces.board[start_pos[0]][start_pos[1]] = self
 
     #all moves for king are take moves
@@ -26,17 +27,47 @@ class King(Pieces):
     ## Really you move the king two spaces either side and the castling happens
     ## change this eventually - shouldnt be that hard
     def is_castle(self, new_pos, board):
-        piece = board[new_pos[0]][new_pos[1]]
-        #if new_pos has rook
-        if piece != None and piece.name == 'rook':
-            #if rook is the same colour
-            if self.colour == piece.colour:
-                #if neither rook nor king have moved, return True
-                if piece.has_moved == False and self.has_moved == False:
-                    #if there are no pieces between the king and the rook
-                    if self.simple_check_pos(new_pos, board) == True:
-                        return True
-        return False
+        diff = self.current_pos - new_pos
+
+
+        #if king already moved
+        if self.has_moved == True:
+            return False
+        #if new_pos is not two places either side
+        elif abs(diff[1]) != 2:
+            return False
+    
+        rook_pos = np.array([self.current_pos[0], 0 if diff[1] > 0 else 7])
+
+        # if piece in rook position is None or not a rook
+        if board[rook_pos[0]][rook_pos[1]] == None or board[rook_pos[0]][rook_pos[1]].name != 'rook':
+            return False
+        #if the rook has moved
+        elif board[rook_pos[0]][rook_pos[1]].has_moved == True:
+            return False
+        #if there is a piece between king and rook
+        elif self.simple_check_pos(rook_pos, board) == False:
+            return False
+        
+        return True
+
+    def apply_castle(self, new_pos, board):
+        diff = new_pos - self.current_pos
+
+        #changes king
+        board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
+        self.current_pos = new_pos #changes kings current_pos
+        board[self.current_pos[0]][self.current_pos[1]] = self #sets the correct king position
+
+
+        rook_pos = np.array([self.current_pos[0], 0 if diff[1] < 0 else 7])
+        rook = board[rook_pos[0]][rook_pos[1]]
+        rook_add = (diff[1]/abs(diff[1])).astype(int)
+
+        #changes rook
+        board[new_pos[0]][new_pos[1] - rook_add] = rook # sets new rook position
+        board[rook_pos[0]][rook_pos[1]] = None #sets original rook position as empty
+        rook.current_pos = np.array([new_pos[0], new_pos[1] - rook_add]) #changes rooks current_pos
         
     def move(self, new_pos, board, apply = True):
         piece = board[new_pos[0]][new_pos[1]]
@@ -53,22 +84,12 @@ class King(Pieces):
             else:
                 if apply == True:
                     self.apply_take(new_pos, board)
-                    self.has_moved == True #takingnote for castling
+                    self.has_moved == True #taking note for castling
                 return True
-        elif self.is_castle(new_pos, board) == True:
+        elif self.is_castle(new_pos, board) == True and self.is_check == False:
             if apply == True:
-                ## this is NOT right!! they dont go to each others position
-                pos_dir = new_pos - self.current_pos
-                pos_dir_hat = (pos_dir / abs(pos_dir[1])).astype(int) # this is to get a unit directional vector since we know only horizontal
-                #changes king
-                board[self.current_pos[0]][self.current_pos[1]] = None # sets original king position to None
-                self.current_pos = self.current_pos + 2*pos_dir_hat #changes kings current_pos
-                board[self.current_pos[0]][self.current_pos[1]] = self #sets the correct king position
-                #changes rook
-                board[new_pos[0]][new_pos[1]] = None # sets original rook position as empty
-                piece.current_pos = self.current_pos - pos_dir_hat #changes rooks current_pos
-                board[piece.current_pos[0]][piece.current_pos[1]] = piece # sets new rook position
-
+                #applying castle
+                self.apply_castle(new_pos, board)
                 self.has_moved = True # taking note for castling
             return True
         else:
